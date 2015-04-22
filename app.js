@@ -12,35 +12,17 @@ var cohorts = require('./routes/cohorts');
 
 var app = express();
 
-var MongoClient = require('mongodb').MongoClient,
-  assert = require('assert');
-
-var insertDocuments = function(db, callback) {
-  // Get the documents collection
-  var collection = db.collection('documents');
-  // Insert some documents
-  collection.insert([
-    {a : 1}, {a : 2}, {a : 3}
-  ], function(err, result) {
-    assert.equal(err, null);
-    assert.equal(3, result.result.n);
-    assert.equal(3, result.ops.length);
-    console.log("Inserted 3 documents into the document collection");
-    callback(result);
-  });
-};
-
+var MongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
 
 // Connection URL
-var url = 'mongodb://localhost:27017/meanpong';
+var url = 'mongodb://localhost:27017/myproject';
 // Use connect method to connect to the Server
 MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
   console.log("Connected correctly to server");
 
-  insertDocuments(db, function() {
-    db.close();
-  });
+  db.close();  
 });
 
 // view engine setup
@@ -51,9 +33,7 @@ app.set('view engine', 'jade');
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended: false
-}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -62,7 +42,7 @@ app.use('/students', students);
 app.use('/cohorts', cohorts);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
@@ -73,7 +53,7 @@ app.use(function (req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function (err, req, res, next) {
+  app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,
@@ -84,7 +64,7 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function (err, req, res, next) {
+app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,
