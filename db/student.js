@@ -22,7 +22,6 @@ function addStudent(student, callback) {
         callback(_student);
       // }
     });
-    db.close();
   });
 
 }
