@@ -1,5 +1,4 @@
 'use strict';
-var _ = require('lodash');
 // name, current cohort, affiliated cohorts, score
 
 var MongoClient = require('mongodb').MongoClient;
@@ -17,17 +16,14 @@ function addStudent(student, callback) {
       nickname: student.nickname,
       score: 0
     };
-    collection.insert(_student, function (err, result) {
-      // if (!err) {
-        callback(_student);
-      // }
+    collection.insert(_student, function () {
+      callback(_student);
     });
   });
 
 }
 
 function getStudent(studentNickname, callback) {
-  console.log(studentNickname)
   MongoClient.connect(url, function (err, db) {
     var collection = db.collection('students');
     // Insert some documents
@@ -35,16 +31,16 @@ function getStudent(studentNickname, callback) {
       nickname: studentNickname,
     };
     collection.findOne(_student, function (err, result) {
-      if (!err) {
-        callback(result);
-      }
+      callback(result);
     });
 
   });
 }
 
 function all(cohort, callback) {
-  var _cohort = {cohort: cohort};
+  var _cohort = {
+    cohort: cohort
+  };
   if (callback === undefined && typeof cohort === 'function') {
     callback = cohort;
     cohort = {};
@@ -57,11 +53,15 @@ function all(cohort, callback) {
   });
 }
 
-function update(query, update, callback) {
-  console.log(query, update);
+function update(query, _update, callback) {
+  console.log(query, _update);
   MongoClient.connect(url, function (err, db) {
     var collection = db.collection('students');
-    collection.update({nickname: query}, {$set: update}, callback);
+    collection.update({
+      nickname: query
+    }, {
+      $set: _update
+    }, callback);
   });
 }
 
