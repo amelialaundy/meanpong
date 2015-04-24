@@ -58,7 +58,15 @@ function all(cohort, callback) {
   });
 }
 
+function update(query, update, callback) {
+  console.log(query, update);
+  MongoClient.connect(url, function (err, db) {
+    var collection = db.collection('students');
+    collection.update({nickname: query}, {$set: update}, callback);
+  });
+}
+
 module.exports.add = addStudent;
 module.exports.get = getStudent;
 module.exports.all = all;
-// module.exports.update = update;
+module.exports.update = update;

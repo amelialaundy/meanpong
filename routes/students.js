@@ -37,10 +37,12 @@ router.post('/add', function (req, res) {
 
 
 // UPDATE student
-router.put('/:id/edit', function (req, res) {
-  // student.update(req.params.id, function (_student) {
-  //   res.send('student updated', _student);
-  // });
+router.put('/:nickname/edit', function (req, res) {
+  console.log(req.body);
+  student.update(req.params.nickname, req.body, function (err, _student) {
+    console.log(err, _student);
+    res.send('student updated', _student);
+  });
 });
 
 module.exports = router;
