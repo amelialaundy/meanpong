@@ -3,24 +3,46 @@ var express = require('express');
 var router = express.Router();
 var student = require('../db/student');
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  console.log('at student!');
-  student.add(req.query, function () {
-    res.send('respond with all students resource');
+// READ all 
+router.get('/', function (req, res) {
+  student.all(function (err, _student) {
+    console.log('students', _student);
+    res.send('students', _student);
   });
 });
 
-router.get('/{id}', function(req, res, next) {
-  res.send('respond with a student resource');
+// READ all by cohort
+router.get('/cohort/:cohortName', function (req, res) {
+  student.all(req.params.cohortName, function (err, _student) {
+    console.log(err);
+    res.send('student', _student);
+  });
 });
 
-router.post('/add', function(req, res, next) {
-  res.send('respond with a new student resource');
+// READ one
+router.get('/:nickname', function (req, res) {
+  student.get(req.params.nickname, function (_student) {
+    res.send('student', _student);
+  });
 });
 
-router.post('/{id}/edit', function(req, res, next) {
-  res.send('respond with a new student resource');
+
+// CREATE new student
+router.post('/add', function (req, res) {
+  console.log('add', req.body);
+  student.add(req.body, function (_student) {
+    res.send('student added', _student);
+  });
+});
+
+
+// UPDATE student
+router.put('/:nickname/edit', function (req, res) {
+  console.log(req.body);
+  student.update(req.params.nickname, req.body, function (err, _student) {
+    console.log(err, _student);
+    res.send('student updated', _student);
+  });
 });
 
 module.exports = router;
