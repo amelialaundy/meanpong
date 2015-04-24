@@ -5,14 +5,16 @@ var student = require('../db/student');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  console.log('at student!');
-  student.add(req.query, function () {
-    res.send('respond with all students resource');
+  student.add(req.query, function (_student) {
+    res.send('student added', _student);
   });
 });
 
-router.get('/{id}', function(req, res, next) {
-  res.send('respond with a student resource');
+router.get('/:nickname', function(req, res, next) {
+  console.log('nickname')
+  student.get(req.params.nickname, function (_student) {
+    res.send('student', _student);
+  });
 });
 
 router.post('/add', function(req, res, next) {
