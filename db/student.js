@@ -1,26 +1,20 @@
 'use strict';
 // name, current cohort, affiliated cohorts, score
+var BBPromise = require('bluebird');
+var mongo = BBPromise.promisifyAll(require('mongodb'));
+var MongoClient = mongo.MongoClient;
 
-var MongoClient = require('mongodb').MongoClient;
-var url = 'mongodb://localhost:27017/meanpong';
+var studentSchema = require('./models/student_model').model;
 
-function addStudent(student, callback) {
-  console.log(student);
+function addStudent(student) {
   // connect to mongo
-  MongoClient.connect(url, function (err, db) {
-    var collection = db.collection('students');
-    // Insert some documents
-    var _student = {
-      name: student.name,
-      cohort: student.cohort,
-      nickname: student.nickname,
-      score: 0
-    };
-    collection.insert(_student, function () {
-      callback(_student);
-    });
-  });
-
+  // mongoose.connect(url);
+  return new studentSchema({
+    name: student.name,
+    cohort: student.cohort,
+    nickname: student.nickname,
+    score: 0
+  }).saveAsync();
 }
 
 function getStudent(studentNickname, callback) {

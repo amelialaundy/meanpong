@@ -11,18 +11,20 @@ var cohorts = require('./routes/cohorts');
 
 var app = express();
 
-var MongoClient = require('mongodb').MongoClient;
-var assert = require('assert');
+// var MongoClient = require('mongodb').MongoClient;
+// var assert = require('assert');
 
+var url = 'mongodb://localhost:27017/meanpong';
+var mongoose = require('mongoose');
 // Connection URL
-var url = 'mongodb://localhost:27017/myproject';
-// Use connect method to connect to the Server
-MongoClient.connect(url, function(err, db) {
-  assert.equal(null, err);
-  console.log('Connected correctly to server');
+// var url = 'mongodb://localhost:27017/myproject';
+// // Use connect method to connect to the Server
+// MongoClient.connect(url, function(err, db) {
+//   assert.equal(null, err);
+//   console.log('Connected correctly to server');
 
-  db.close();  
-});
+//   db.close();  
+// });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -70,6 +72,11 @@ app.use(function(err, req, res) {
     error: {}
   });
 });
+
+
+if (!mongoose.connection.db) {
+  mongoose.connect(url);
+}
 
 
 module.exports = app;
