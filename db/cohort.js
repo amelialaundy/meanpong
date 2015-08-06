@@ -1,58 +1,50 @@
 // name, year, id, total score
 'use strict';
-var MongoClient = require('mongodb').MongoClient;
-var url = 'mongodb://localhost:27017/meanpong';
+var BBPromise = require('bluebird');
+var mongo = BBPromise.promisifyAll(require('mongodb'));
+var MongoClient = mongo.MongoClient;
 
-function addCohort(cohort, callback) {
-  console.log(cohort);
-  // connect to mongo
-  MongoClient.connect(url, function (err, db) {
-    var collection = db.collection('cohorts');
-    // Insert some documents
-    var _cohort = {
-      name: cohort.name,
-      year: cohort.year,
-      totalScore: 0
-    };
-    collection.insert(_cohort, function () {
-      // if (!err) {
-        callback(_cohort);
-      // }
-    });
-  });
+var cohortSchema = require('./models/cohort_model').model;
 
+function addCohort(cohort) {
+  return new cohortSchema({
+    name: cohort.name,
+    year: cohort.year
+  }).saveAsync();
 }
 
-function getCohort(cohortNickname, callback) {
-  MongoClient.connect(url, function (err, db) {
-    var collection = db.collection('cohorts');
-    var _cohort = {
-      name: cohortNickname,
-    };
-    collection.findOne(_cohort, function (err, result) {
-      if (!err) {
-        callback(result);
-      }
+function getCohort(cohortName) {
+  var _cohort = {
+    name: cohortName,
+  };
+  return cohortSchema.findOneAsync(_cohort)
+    .then(function (result) {
+      return result;
     });
-
-  });
 }
 
-function all(callback) {
-  MongoClient.connect(url, function (err, db) {
-    var collection = db.collection('cohorts');
-    collection.find({}, function (err, cursor) {
-      cursor.toArray(callback);
+function all() {
+  return cohortSchema.findAsync({})
+    .then(function (result) {
+      return result;
     });
-  });
 }
 
-function update(query, _update, callback) {
-  console.log(query, _update);
-  MongoClient.connect(url, function (err, db) {
-    var collection = db.collection('cohorts');
-    collection.update({name: query}, {$set: _update}, callback);
-  });
+function update(existingName, updateName) {
+  var query = {
+    name: existingName
+  };
+  return cohortSchema.findOneAsync(query)
+    .then(function (_cohort) {
+      return _cohort.updateAsync({
+        $set: {
+          name: updateName
+        }
+      }).then(function (updatedCohort) {
+        return updatedCohort;
+      });
+    });
+
 }
 
 module.exports.add = addCohort;

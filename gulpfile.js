@@ -105,6 +105,7 @@ gulp.task('nodemon', function () {
   nodemon({
     script: 'bin/www',
     ext: 'js html',
+    ignore: ['node_modules', 'coverage'],
     env: {
       'NODE_ENV': 'development'
     }

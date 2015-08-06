@@ -17,46 +17,43 @@ function addStudent(student) {
   }).saveAsync();
 }
 
-function getStudent(studentNickname, callback) {
-  MongoClient.connect(url, function (err, db) {
-    var collection = db.collection('students');
-    // Insert some documents
-    var _student = {
-      nickname: studentNickname,
-    };
-    collection.findOne(_student, function (err, result) {
-      callback(result);
-    });
-
-  });
-}
-
-function all(cohort, callback) {
-  var _cohort = {
-    cohort: cohort
+function getStudent(studentNickname) {
+  // Insert some documents
+  var _student = {
+    nickname: studentNickname,
   };
-  if (callback === undefined && typeof cohort === 'function') {
-    callback = cohort;
-    cohort = {};
-  }
-  MongoClient.connect(url, function (err, db) {
-    var collection = db.collection('students');
-    collection.find(_cohort, function (err, cursor) {
-      cursor.toArray(callback);
+  return studentSchema.findOneAsync(_student)
+    .then(function (result) {
+      return result;
     });
-  });
 }
 
-function update(query, _update, callback) {
-  console.log(query, _update);
-  MongoClient.connect(url, function (err, db) {
-    var collection = db.collection('students');
-    collection.update({
-      nickname: query
-    }, {
-      $set: _update
-    }, callback);
-  });
+function all(cohort) {
+  var requestedCohort = {};
+  if (cohort !== undefined) {
+    requestedCohort.cohort = cohort;
+  }
+  return studentSchema.findAsync(requestedCohort)
+    .then(function (_student) {
+      return _student;
+    });
+}
+
+function update(query, _update) {
+  return studentSchema.findOneAsync(query)
+    .then(function (_student) {
+      if (_student !== null) {
+        return _student.updateAsync({
+          $set: {
+            nickname: _update
+          }
+        }).then(function (updatedStudent) {
+          return updatedStudent;
+        });
+      } else {
+        throw new Error('StudentNotFound');
+      }
+    });
 }
 
 module.exports.add = addStudent;
