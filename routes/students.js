@@ -5,7 +5,7 @@ var student = require('../db/student');
 
 // READ all 
 router.get('/', function (req, res) {
-  student.all(function (err, _student) {
+  return student.all().then(function (_student) {
     console.log('students', _student);
     res.send('students', _student);
   });
@@ -13,15 +13,14 @@ router.get('/', function (req, res) {
 
 // READ all by cohort
 router.get('/cohort/:cohortName', function (req, res) {
-  student.all(req.params.cohortName, function (err, _student) {
-    console.log(err);
+  return student.all(req.params.cohortName).then(function (_student) {
     res.send('student', _student);
   });
 });
 
 // READ one
 router.get('/:nickname', function (req, res) {
-  student.get(req.params.nickname, function (_student) {
+  return student.get(req.params.nickname).then(function (_student) {
     res.send('student', _student);
   });
 });
@@ -30,7 +29,7 @@ router.get('/:nickname', function (req, res) {
 // CREATE new student
 router.post('/add', function (req, res) {
   console.log('add', req.body);
-  student.add(req.body, function (_student) {
+  return student.add(req.body).then(function (_student) {
     res.send('student added', _student);
   });
 });
@@ -39,7 +38,7 @@ router.post('/add', function (req, res) {
 // UPDATE student
 router.put('/:nickname/edit', function (req, res) {
   console.log(req.body);
-  student.update(req.params.nickname, req.body, function (err, _student) {
+  return student.update(req.params.nickname, req.body).then(function (_student) {
     console.log(err, _student);
     res.send('student updated', _student);
   });
